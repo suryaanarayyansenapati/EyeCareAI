@@ -1,0 +1,841 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15919B">
+  <meta name="description" content="EyeCare AI educational eye tracking and eye health awareness prototype.">
+  <title>EyeCare AI | Eye Health Awareness</title>
+
+  <style>
+    :root {
+      --bg: #e9fffa;
+      --surface: #ffffff;
+      --primary: #15919B;
+      --primary-dark: #0C6478;
+      --teal: #09D1C7;
+      --text: #213A58;
+      --muted: #426a78;
+      --border: #b7eee5;
+      --soft-blue: #e0fbf5;
+      --soft-teal: #d8fff0;
+      --shadow: 0 8px 28px rgba(12, 100, 120, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      max-width: 1100px;
+      margin: auto;
+      padding: 17px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .brand-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--soft-blue);
+      color: var(--primary);
+      font-size: 25px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -.5px;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .nav-tag {
+      padding: 7px 12px;
+      border-radius: 30px;
+      background: var(--soft-teal);
+      color: #167568;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    main {
+      width: min(1100px, calc(100% - 32px));
+      margin: 30px auto 40px;
+    }
+
+    .hero {
+      margin-bottom: 25px;
+    }
+
+    .eyebrow {
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 7px 0;
+      font-size: clamp(27px, 4vw, 38px);
+      line-height: 1.2;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 21px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 5px;
+      font-size: 18px;
+      letter-spacing: -.3px;
+    }
+
+    .card-intro {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 17px;
+    }
+
+    .camera {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border-radius: 13px;
+      background: linear-gradient(145deg, #80EE98, #46DFB1, #09D1C7);
+      border: 1px solid var(--border);
+    }
+
+    video, canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    video { display: none; }
+
+    #placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .eye-icon {
+      font-size: 44px;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .status {
+      margin-top: 13px;
+      padding: 12px 14px;
+      background: var(--soft-blue);
+      color: var(--primary-dark);
+      border-radius: 10px;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px 16px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: .55; cursor: wait; }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary:hover { background: var(--primary-dark); }
+
+    .secondary {
+      background: #dffaf3;
+      color: #0C6478;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      margin-top: 17px;
+    }
+
+    .stat {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #f4fffc;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 650;
+      overflow-wrap: anywhere;
+    }
+
+    .result {
+      margin-top: 13px;
+      padding: 14px;
+      background: #effff9;
+      border: 1px solid #b7eee5;
+      border-radius: 11px;
+      color: #213A58;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+    }
+
+    .notice {
+      padding: 14px;
+      background: #fff8e9;
+      border: 1px solid #f1e4c4;
+      border-radius: 11px;
+      color: #705c32;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .notice strong { color: #5e481f; }
+    .health-card { padding: 13px 16px; margin-bottom: 12px; }
+    .health-card h2 { font-size: 14px; }
+    .compact-notice { padding: 9px 11px; font-size: 10px; line-height: 1.45; }
+    .wellness-result strong { display: block; margin-bottom: 3px; }
+
+    label.question {
+      display: block;
+      margin: 17px 0 7px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #a8e4db;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    select:focus, button:focus-visible {
+      outline: 2px solid #09D1C7;
+      outline-offset: 2px;
+    }
+
+    .section-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-right: 8px;
+      border-radius: 10px;
+      background: var(--soft-blue);
+      color: var(--primary);
+      vertical-align: middle;
+      font-size: 18px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    footer {
+      padding: 25px 16px 18px;
+      text-align: center;
+      background: #e9fffa;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-title {
+      color: #456277;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .footer-note {
+      margin-top: 3px;
+      color: #8796a4;
+      font-size: 11px;
+    }
+
+    .credit {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #edf1f5;
+      color: #8796a4;
+      font-size: 10px;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .credit span {
+      color: #526d82;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      main { margin-top: 22px; }
+      .card { padding: 17px; }
+      .nav { padding: 14px 16px; }
+      .nav-tag { font-size: 10px; }
+    }
+
+    @media (max-width: 380px) {
+      .brand h1 { font-size: 18px; }
+      .nav-tag { display: none; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">◎</div>
+        <div>
+          <h1>EyeCare AI</h1>
+          <p>Eye health awareness platform</p>
+        </div>
+      </div>
+      <div class="nav-tag">Educational Prototype</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Digital eye health</div>
+      <h2>A clearer approach to eye awareness.</h2>
+      <p>
+        Explore real-time eye landmark tracking and general vision
+        guidance in one simple interface. This prototype is educational
+        and does not replace a professional eye examination.
+      </p>
+    </section>
+
+    <div class="layout">
+      <div>
+        <section class="card">
+          <h2><span class="section-icon">◎</span>Live Eye Scanner</h2>
+          <p class="card-intro">
+            Sit in a well-lit room and face the camera. Allow camera
+            access when prompted. An internet connection is needed
+            to load the tracking model.
+          </p>
+
+          <div class="camera">
+            <div id="placeholder">
+              <div class="eye-icon">◎</div>
+              <strong>Camera preview</strong>
+              <span>Your live preview will appear here.</span>
+            </div>
+            <video id="video" autoplay muted playsinline></video>
+            <canvas id="overlay"></canvas>
+          </div>
+
+          <div id="status" class="status" role="status" aria-live="polite">
+            Ready to start
+          </div>
+
+          <button id="start" class="primary">Start Eye Scanner</button>
+          <button id="stop" class="secondary">Stop Camera</button>
+        </section>
+
+        <section class="card">
+          <h2><span class="section-icon">◉</span>Experimental Colour Signal</h2>
+          <p class="card-intro">
+            A basic image-colour statistic from regions around the
+            detected eye landmarks. It is not a validated redness test.
+          </p>
+          <div id="redness-result" class="result" aria-live="polite">
+            Start the scanner to display the experimental colour statistic.
+          </div>
+          <p class="card-intro" style="margin:12px 0 0">
+            Lighting, reflections, eyelids, skin and image quality can
+            affect this measurement. It cannot diagnose redness or infection.
+          </p>
+        </section>
+      </div>
+
+      <div>
+        <section class="card">
+          <h2><span class="section-icon">✨</span>Eye Wellness Check</h2>
+          <p class="card-intro">
+            Keep your face in view for 10 seconds. The website will show simple experimental estimates and practical advice.
+          </p>
+          <div id="wellness-status" class="status" role="status" aria-live="polite">Waiting for 10 seconds of steady eye detection…</div>
+          <div class="result"><strong>🔴 1. Eye redness</strong><div id="well-redness">Waiting for eye detection.</div></div>
+          <div class="result"><strong>👁️ 2. Eye shape</strong><div id="well-shape">Waiting for eye detection.</div></div>
+          <div class="result"><strong>🌙 3. Dark circles & sleep</strong><div id="well-dark">Waiting for eye detection.</div></div>
+          <label class="question" for="ageGroup">🛌 4. What is your age group?</label>
+          <select id="ageGroup">
+            <option value="teen">13–17 years</option>
+            <option value="adult">18–64 years</option>
+            <option value="older">65+ years</option>
+          </select>
+          <div id="well-sleep" class="result">For teens, aim for 8–10 hours of sleep per night.</div>
+          <label class="question" for="screenTime">📱 5. How much screen time do you usually have each day?</label>
+          <select id="screenTime">
+            <option value="unset">Choose your daily screen time</option>
+            <option value="low">Under 2 hours</option>
+            <option value="medium">2–4 hours</option>
+            <option value="high">4–6 hours</option>
+            <option value="veryhigh">More than 6 hours</option>
+          </select>
+          <button class="primary" id="screenAdvice">Get Screen-Time Advice</button>
+          <div id="well-screen" class="result">Choose an answer above to get practical advice.</div>
+          <p class="card-intro" style="margin:12px 0 0">⚠️ Webcam estimates can be wrong due to lighting, camera quality, skin tone, makeup and movement. They are not medical results.</p>
+        </section>
+      </div>
+
+      <section class="card full health-card">
+        <h2><span class="section-icon">ℹ️</span>Important Health Information</h2>
+        <div class="notice compact-notice">
+          <strong>Educational use only.</strong> EyeCare AI is not a medical device and does not diagnose conditions, confirm or rule out infection, determine glasses needs, or measure prescription power. A qualified eye-care professional can examine your eyes. <strong>Sudden vision changes, severe eye pain, or a painful red eye with light sensitivity need urgent professional assessment.</strong> Do not delay care to use this website.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-title">EyeCare AI</div>
+    <div class="footer-note">Eye health awareness · Educational prototype</div>
+    <div class="credit">Made by <span>Surya</span></div>
+  </footer>
+
+  <script type="module">
+    import {
+      FaceLandmarker,
+      FilesetResolver
+    } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm";
+
+    const $ = id => document.getElementById(id);
+    const video = $("video");
+    const canvas = $("overlay");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const status = $("status");
+    const placeholder = $("placeholder");
+
+    let stream = null;
+    let tracker = null;
+    let running = false;
+    let frames = 0;
+    let lastVideoTime = -1;
+    let rednessTick = 0;
+    let faceDetectedSince = null;
+    let wellnessDone = false;
+
+    const leftEye = [33, 160, 158, 133, 153, 144];
+    const rightEye = [362, 385, 387, 263, 373, 380];
+
+    function drawEye(points, indices) {
+      // Use the original eye landmarks from the first working scanner.
+      // Fit an oval around each eye so the detection ring is easy to see.
+      const coords = indices.map(index => ({
+        x: points[index].x * canvas.width,
+        y: points[index].y * canvas.height
+      }));
+      const xs = coords.map(p => p.x);
+      const ys = coords.map(p => p.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const rx = Math.max((maxX - minX) * 0.72, 9);
+      const ry = Math.max((maxY - minY) * 1.7, 6);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "#09D1C7";
+      ctx.lineWidth = Math.max(2.5, canvas.width / 320);
+      ctx.shadowColor = "rgba(33, 58, 88, 0.65)";
+      ctx.shadowBlur = 5;
+      ctx.stroke();
+      ctx.restore();
+
+      // Small landmark dots help confirm that the model is tracking the eye.
+      coords.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(2, canvas.width / 320), 0, 2 * Math.PI);
+        ctx.fillStyle = "#80EE98";
+        ctx.strokeStyle = "#213A58";
+        ctx.lineWidth = 1;
+        ctx.fill();
+        ctx.stroke();
+      });
+    }
+
+    function estimateColourSignal(points, indices) {
+      const xs = indices.map(i => points[i].x * video.videoWidth);
+      const ys = indices.map(i => points[i].y * video.videoHeight);
+
+      const minX = Math.max(0, Math.floor(Math.min(...xs)));
+      const maxX = Math.min(video.videoWidth - 1, Math.ceil(Math.max(...xs)));
+      const minY = Math.max(0, Math.floor(Math.min(...ys)));
+      const maxY = Math.min(video.videoHeight - 1, Math.ceil(Math.max(...ys)));
+
+      const w = maxX - minX;
+      const h = maxY - minY;
+      if (w < 4 || h < 4) return null;
+
+      const sample = document.createElement("canvas");
+      sample.width = w;
+      sample.height = h;
+
+      const sctx = sample.getContext("2d", { willReadFrequently: true });
+      sctx.drawImage(video, minX, minY, w, h, 0, 0, w, h);
+
+      const data = sctx.getImageData(0, 0, w, h).data;
+      let total = 0;
+      let count = 0;
+
+      for (let i = 0; i < data.length; i += 16) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        if (r > 35 && g > 20 && b > 15) {
+          total += r / (g + b + 1);
+          count++;
+        }
+      }
+
+      return count ? total / count : null;
+    }
+
+    function updateColourSignal(points) {
+      const a = estimateColourSignal(points, leftEye);
+      const b = estimateColourSignal(points, rightEye);
+
+      if (a === null || b === null) {
+        $("redness-result").textContent =
+          "Insufficient image data. Improve lighting and face the camera.";
+        return;
+      }
+
+      const value = ((a + b) / 2).toFixed(2);
+      $("redness-result").textContent =
+        "Experimental eye-region colour statistic: " + value +
+        ". This is not a validated redness score and cannot tell " +
+        "whether your eyes are healthy or infected.";
+    }
+
+    function eyeShapeEstimate(points, indices) {
+      const coords = indices.map(i => points[i]);
+      const xs = coords.map(p => p.x);
+      const ys = coords.map(p => p.y);
+      const width = Math.max(...xs) - Math.min(...xs);
+      const height = Math.max(...ys) - Math.min(...ys);
+      const ratio = width / Math.max(height, 0.001);
+      return ratio >= 2.8 ? "Almond-like" : "Round-like";
+    }
+
+    function averageLuminance(x, y, radius = 5) {
+      const w = video.videoWidth, h = video.videoHeight;
+      const cx = Math.max(radius, Math.min(w - radius - 1, Math.round(x * w)));
+      const cy = Math.max(radius, Math.min(h - radius - 1, Math.round(y * h)));
+      const sample = document.createElement("canvas");
+      sample.width = radius * 2 + 1;
+      sample.height = radius * 2 + 1;
+      const c = sample.getContext("2d", { willReadFrequently: true });
+      c.drawImage(video, cx - radius, cy - radius, sample.width, sample.height, 0, 0, sample.width, sample.height);
+      const d = c.getImageData(0, 0, sample.width, sample.height).data;
+      let sum = 0, count = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+        count++;
+      }
+      return sum / count;
+    }
+
+    function analyzeWellness(points) {
+      const a = estimateColourSignal(points, leftEye);
+      const b = estimateColourSignal(points, rightEye);
+      if (a !== null && b !== null) {
+        const signal = (a + b) / 2;
+        $("well-redness").textContent = signal > 0.72
+          ? "The camera picked up a higher red-colour signal around the eyes. This may be lighting or skin colour—not proof of redness. Check in a mirror; seek care for persistent or painful redness."
+          : "No strong red-colour signal was detected in this image, but the webcam cannot reliably rule out redness. Check in a mirror if concerned.";
+      } else {
+        $("well-redness").textContent = "Could not estimate the image clearly. Try even lighting; check in a mirror if concerned.";
+      }
+
+      const shapeA = eyeShapeEstimate(points, leftEye);
+      const shapeB = eyeShapeEstimate(points, rightEye);
+      const shape = shapeA === shapeB ? shapeA.toLowerCase() : "mixed / unclear";
+      $("well-shape").textContent = "Your eye opening looks " + shape + " in this frame. This is a rough visual guess, not a reliable classification.";
+
+      // Sample just below each eye; lighting and skin tone make this estimate unreliable.
+      const underL = averageLuminance(points[145].x, Math.min(0.98, points[145].y + 0.025));
+      const underR = averageLuminance(points[374].x, Math.min(0.98, points[374].y + 0.025));
+      const upperL = averageLuminance(points[33].x, Math.max(0.02, points[33].y - 0.025));
+      const upperR = averageLuminance(points[362].x, Math.max(0.02, points[362].y - 0.025));
+      const darkness = ((upperL + upperR) / 2) - ((underL + underR) / 2);
+      $("well-dark").textContent = darkness > 10
+        ? "A darker area may be visible under the eyes in this frame, but shadows and lighting can cause false results. Try a consistent sleep routine and enough rest; dark circles can also be genetic."
+        : "No clear under-eye darkness was estimated in this frame. This is not reliable enough to rule dark circles in or out. Keep a consistent sleep routine and get enough rest.";
+      updateSleepAdvice();
+      $("wellness-status").textContent = "✅ Check complete. Estimates are ready below.";
+    }
+
+    function updateSleepAdvice() {
+      const group = $("ageGroup").value;
+      const advice = group === "teen"
+        ? "Aim for 8–10 hours nightly. Keep a regular bedtime and wake time, and reduce bright screens before bed."
+        : group === "adult"
+          ? "Most adults need 7–9 hours nightly. Keep a regular sleep schedule and wind down before bed."
+          : "Many adults 65+ need about 7–8 hours nightly. Keep a regular sleep schedule and discuss ongoing sleep problems with a clinician.";
+      $("well-sleep").textContent = advice;
+    }
+
+    function screenTimeAdvice() {
+      const value = $("screenTime").value;
+      const messages = {
+        unset: "Choose your usual daily screen time first.",
+        low: "That is a relatively short amount. Keep taking breaks and protect your sleep.",
+        medium: "Try regular breaks, look into the distance every 20 minutes, and avoid screens close to bedtime.",
+        high: "Consider reducing non-essential screen time gradually. Schedule screen-free breaks, outdoor activity, and a screen-free wind-down before sleep.",
+        veryhigh: "Try reducing non-essential use in small steps. Add regular breaks, outdoor time, and screen-free periods around meals and before bed. Your answer is self-reported; this site cannot measure screen time." 
+      };
+      $("well-screen").textContent = messages[value];
+    }
+
+    async function startScanner() {
+      if (running || stream) return;
+      $("start").disabled = true;
+
+      try {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error("Camera unavailable. Use localhost or HTTPS.");
+        }
+
+        status.textContent = "Requesting camera permission...";
+
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: "user",
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          }
+        });
+
+        video.srcObject = stream;
+        video.style.display = "block";
+        await new Promise((resolve, reject) => {
+          if (video.readyState >= 2 && video.videoWidth > 0) return resolve();
+          video.onloadedmetadata = () => resolve();
+          video.onerror = () => reject(new Error("Could not read camera video."));
+        });
+        await video.play();
+
+        status.textContent = "Loading eye-tracking model...";
+
+        const vision = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+        );
+
+        tracker = await FaceLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+          },
+          runningMode: "VIDEO",
+          numFaces: 1
+        });
+
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+        placeholder.style.display = "none";
+        frames = 0;
+        lastVideoTime = -1;
+        rednessTick = 0;
+        faceDetectedSince = null;
+        wellnessDone = false;
+        $("wellness-status").textContent = "Waiting for 10 seconds of steady eye detection…";
+        $("well-redness").textContent = "Waiting for eye detection.";
+        $("well-shape").textContent = "Waiting for eye detection.";
+        $("well-dark").textContent = "Waiting for eye detection.";
+        running = true;
+
+        status.textContent = "Scanner active — position your face";
+        requestAnimationFrame(scanFrame);
+
+      } catch (error) {
+        stopScanner();
+        status.textContent =
+          "Could not start: " + error.message +
+          ". Check camera permission and internet, then try again.";
+      } finally {
+        $("start").disabled = false;
+      }
+    }
+
+    function scanFrame() {
+      if (!running) return;
+
+      if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime;
+
+        try {
+          const result = tracker.detectForVideo(video, performance.now());
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          frames++;
+
+          const points = result.faceLandmarks?.[0];
+
+          if (points) {
+            drawEye(points, leftEye);
+            drawEye(points, rightEye);
+
+            status.textContent = "Face detected — tracking eyes live";
+
+            rednessTick++;
+            if (rednessTick % 20 === 0) updateColourSignal(points);
+            if (faceDetectedSince === null) faceDetectedSince = performance.now();
+            const heldSeconds = (performance.now() - faceDetectedSince) / 1000;
+            if (!wellnessDone) {
+              $("wellness-status").textContent = "👀 Eye detected — hold still for " + Math.max(0, Math.ceil(10 - heldSeconds)) + " more seconds…";
+              if (heldSeconds >= 10) {
+                wellnessDone = true;
+                analyzeWellness(points);
+              }
+            }
+          } else {
+            faceDetectedSince = null;
+            if (!wellnessDone) $("wellness-status").textContent = "Move into view; the 10-second timer restarts if your face is lost.";
+            status.textContent = "Move into view and improve lighting";
+          }
+        } catch (error) {
+          status.textContent =
+            "Tracking failed. Stop and restart the scanner.";
+        }
+      }
+
+      requestAnimationFrame(scanFrame);
+    }
+
+    function stopScanner() {
+      running = false;
+
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      if (tracker) {
+        tracker.close();
+        tracker = null;
+      }
+
+      video.pause();
+      video.srcObject = null;
+      video.style.display = "none";
+      placeholder.style.display = "grid";
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      $("redness-result").textContent =
+        "Scanner stopped. No medical conclusion was made.";
+      status.textContent = "Camera stopped";
+    }
+
+    function val(id) {
+      return $(id).value;
+    }
+
+    $("start").addEventListener("click", startScanner);
+    $("stop").addEventListener("click", stopScanner);
+    $("ageGroup").addEventListener("change", updateSleepAdvice);
+    $("screenAdvice").addEventListener("click", screenTimeAdvice);
+    window.addEventListener("pagehide", stopScanner);
+  </script>
+</body>
+</html>
