@@ -42,6 +42,6 @@ The goal of this project is to explore browser-based web development, camera acc
 
 - ## 🖥️ Website Preview
 
-![EyeCare AI Homepage](eyecare-homepage.png)
+![EyeCare AI Homepage](eyecare-homepage.png.png)
 
 🔗 **[Try EyeCare AI Live](https://suryaanarayyansenapati.github.io/EyeCareAI/)**
